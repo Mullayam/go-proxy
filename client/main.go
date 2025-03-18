@@ -1,20 +1,49 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"io"
 	"log"
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"sync"
 	"syscall"
 )
 
 const (
-	localAddr  = "127.0.0.1:6380" // Redis
-	serverPort = ":20348"         // Port to listen on
+	serverPort = ":20348" // Port to listen on
 )
 
+func EnvArguments() string {
+	// Define port flag
+	port := flag.Int("port", 0, "Port number to use")
+	flag.IntVar(port, "p", 0, "Port number to use (shorthand)")
+
+	// Define help flag
+	help := flag.Bool("help", false, "Show help")
+	flag.BoolVar(help, "h", false, "Show help (shorthand)")
+
+	// Parse flags
+	flag.Parse()
+
+	// Show help if -h or --help is used
+	if *help {
+		flag.Usage()
+		os.Exit(0)
+	}
+
+	// Check if port is provided
+	if *port == 0 {
+		log.Println("Error: --port or -p is required")
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	return strconv.Itoa(*port) // Convert int to string before returning
+}
 func handleConnection(clientConn net.Conn, wg *sync.WaitGroup) {
 	defer wg.Done()
 	defer clientConn.Close()
@@ -33,6 +62,10 @@ func handleConnection(clientConn net.Conn, wg *sync.WaitGroup) {
 }
 
 func main() {
+	// port := EnvArguments()
+
+	// localAddr := fmt.Printf("127.0.0.1:%s", port)
+
 	ln, err := net.Listen("tcp", serverPort)
 	if err != nil {
 		log.Fatal("Failed to start server:", err)
