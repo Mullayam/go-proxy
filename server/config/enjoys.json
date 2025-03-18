@@ -1,0 +1,30 @@
+{
+    "domain_name": "yoursite.com",
+    "name": "redis",
+    "listen_port": 30001,
+    "protocol": "tcp",
+    "proxy": {
+      "target_url": "localhost:6380"
+    },
+    "use_ssl": false,
+    "certificates": [
+      {
+        "cert_file": "./new.cert.cert",
+        "key_file": "./new.cert.key"
+      }
+    ],
+    "ports_whitelist": {
+      "https": {
+        "ranges": [
+          {
+            "from": 8000,
+            "to": 9000
+          }
+        ]
+      },
+      "tls": {
+        "ports": [6000, 6015]
+      }
+    }
+  }
+  
